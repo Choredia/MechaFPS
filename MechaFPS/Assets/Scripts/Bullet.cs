@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] GameObject hitEffect;
+    [SerializeField] GameObject enemyHitEffect;
     private void OnCollisionEnter(Collision collision)
     {
         if (!collision.gameObject.CompareTag("Player"))
@@ -18,7 +19,9 @@ public class Bullet : MonoBehaviour
             // "target" scriptini çalýþtýr
             if (targetScript != null && collision.gameObject.CompareTag("Enemy"))
             {
-                targetScript.TakeDamage(20f); // Target scriptindeki bir iþlevi çaðýrabilirsiniz
+                targetScript.TakeDamage(20f); 
+                GameObject enemyHitGO = Instantiate(enemyHitEffect, collisionPoint, Quaternion.LookRotation(contactPoint.normal));
+                Destroy(enemyHitGO, 2f);
             }
             else
             {

@@ -18,6 +18,9 @@ public class Gun : MonoBehaviour
 
     [SerializeField] private GameObject hitEffect;
     [SerializeField] private GameObject fleshEffect;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip pistolAudio;
+    [SerializeField] private AudioClip heavyAudio;
 
     private Transform firePoint;
     public Transform pistolFirePoint;
@@ -34,6 +37,7 @@ public class Gun : MonoBehaviour
     {
         cam = Camera.main;
         animator = GetComponentInParent<Animator>();
+        audioSource = GetComponentInParent<AudioSource>();
     }
     private void Update()
     {
@@ -56,29 +60,12 @@ public class Gun : MonoBehaviour
             
             if (damage == heavyDamage)
             {
-                if (Time.time >= nextTimeToFire && Input.GetButton("Fire1"))
-                {
-                    animator.SetBool("Shooting", true);
-                    FireBullet();
-                    nextTimeToFire = Time.time + 1f / fireRate;
-                }
-                else
-                {
-                    animator.SetBool("Shooting", false);
-                }
-                
+                HeavyFire();
+
             }
             else
             {
-                if (Input.GetButtonDown("Fire1"))
-                {
-                    animator.SetBool("Shooting", true);
-                    FireBullet();
-                }
-                else
-                {
-                    animator.SetBool("Shooting", false);
-                }
+                PistolFire();
             }
 
         }
@@ -87,6 +74,7 @@ public class Gun : MonoBehaviour
             reloadWarning.SetActive(true);
             
         }
+
         if (Input.GetKeyDown(KeyCode.R))
         {
 
@@ -103,6 +91,58 @@ public class Gun : MonoBehaviour
 
 
     }
+
+    private void PistolFire()
+    {
+        if (Input.GetButtonDown("Fire1"))
+        {
+            animator.SetBool("Shooting", true);
+            audioSource.Stop();
+            audioSource.PlayOneShot(pistolAudio);
+            
+            FireBullet();
+           
+        }
+        else
+        {
+            animator.SetBool("Shooting", false);
+        }
+    }
+
+    private void HeavyFire()
+    {
+        
+            
+          
+
+            if (Input.GetButton("Fire1")&&Time.time >= nextTimeToFire)
+            {
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.PlayOneShot(heavyAudio);
+                }
+                animator.SetBool("Shooting", true);
+                 //nexttimetofire olayý bozuyor.
+                FireBullet();
+                nextTimeToFire = Time.time + 1f / fireRate;
+            }
+            else
+            {
+                animator.SetBool("Shooting", false);
+
+            }
+        if (Input.GetButtonUp("Fire1"))
+        {
+            audioSource.Stop();
+        }
+       
+    }
+
+    private void HeavySound()
+    {
+        
+    }
+
     private void Reload()
     {
         reloadWarning.SetActive(false);
@@ -129,7 +169,7 @@ public class Gun : MonoBehaviour
     private void FireBullet()
     {
         bulletsShot++;
-        muzzleFlash.Play();
+        
         
         GameObject bullet = ObjectPool.Instance.GetBullet();
         bullet.transform.position = firePoint.position;

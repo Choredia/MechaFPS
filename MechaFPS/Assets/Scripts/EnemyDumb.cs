@@ -12,9 +12,12 @@ public class EnemyDumb : MonoBehaviour
     private float BlendEnemySpeed;
     private float enemySpeed;
     private float bulletSpeed = 10f;
+    private Vector3 lastPosition;
     public Transform firePoint;
     public Transform firePoint1;
     [SerializeField] Transform mainCam;
+    [SerializeField] AudioSource walkSound;
+    [SerializeField] AudioSource gunSound;
     
     [SerializeField] private float fireRate = 2.0f;
     private float nextFireTime;
@@ -28,12 +31,23 @@ public class EnemyDumb : MonoBehaviour
     {
         shootingDistance = enemyReferences.navMeshAgent.stoppingDistance;
         enemySpeed = enemyReferences.navMeshAgent.speed;
+        lastPosition = transform.position;
     }
 
     void Update()
     {
-
-        
+        if (Vector3.Distance(transform.position, lastPosition) > 0.01f) 
+        {
+            if (!walkSound.isPlaying)
+            {
+                walkSound.Play();
+            }
+        }
+        else
+        {
+            walkSound.Stop();
+        }
+        lastPosition = transform.position;
 
 
         if (target != null)
@@ -46,8 +60,15 @@ public class EnemyDumb : MonoBehaviour
                 LookAtTheTarget();
                 if (Time.time >= nextFireTime)
                 {
+                    walkSound.Stop();
+                    //gun sound 
+                    if (!gunSound.isPlaying)
+                    {
+                        gunSound.Play();
+                    }
                     FireBullet();
                     nextFireTime = Time.time + 1f/fireRate;
+
                 }
                 
 
@@ -55,6 +76,7 @@ public class EnemyDumb : MonoBehaviour
             else
             {
                 UpdatePath();
+                gunSound.Stop();
                 
             }
 
@@ -67,7 +89,7 @@ public class EnemyDumb : MonoBehaviour
     }
     private void FireBullet()
     {
-
+        
 
         GameObject bullet = ObjectPool.Instance.GetEnemy();
         bullet.transform.position = firePoint.position;
@@ -84,13 +106,23 @@ public class EnemyDumb : MonoBehaviour
             Rigidbody bulletRigidbody1 = bullet1.GetComponent<Rigidbody>();
             Vector3 direction1 = (mainCam.position) - bullet1.transform.position;
             bulletRigidbody1.velocity = direction1.normalized * bulletSpeed;
+            bullet1.transform.rotation = Quaternion.LookRotation(direction1.normalized);
+
         }
 
         Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
         Vector3 direction = (mainCam.position) - bullet.transform.position;
         bulletRigidbody.velocity = direction.normalized * bulletSpeed;
+        bullet.transform.rotation = Quaternion.LookRotation(direction.normalized);
+
 
         Invoke("DisableBullet", 2f);
+        GunSoundOff();
+
+    }
+    private void GunSoundOff()
+    {
+        gunSound.Stop(); 
     }
 
     private void DisableBullet()

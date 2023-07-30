@@ -6,6 +6,7 @@ public class Target : MonoBehaviour
     private Animator animator;
     private bool isDead = false;
     [SerializeField] EnemyDumb enemyScript;
+    private AudioSource audioSource;
     public float sightRange;
     public bool playerInSightRange;
 
@@ -15,6 +16,7 @@ public class Target : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -47,7 +49,11 @@ public class Target : MonoBehaviour
     }
     void Die()
     {
-        animator.SetBool("EnemyDeath", true);
+
+        Destroy(gameObject);
+        /*animator.SetBool("EnemyDeath", true);
         Destroy(enemyScript);
+        Destroy(audioSource);
+        */
     }
 }

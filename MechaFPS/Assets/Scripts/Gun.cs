@@ -4,34 +4,36 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    [SerializeField] float damage;
-    [SerializeField] float pistolDamage = 5f;
-    [SerializeField] float heavyDamage = 15f;
-
-    [SerializeField] private float fireRate= 2f;
-    private float nextTimeToFire = 0f;
-
     private Camera cam;
     private Animator animator;
+    private Transform firePoint;
 
     [SerializeField] private ParticleSystem muzzleFlash;
 
     [SerializeField] private GameObject hitEffect;
     [SerializeField] private GameObject fleshEffect;
+    [SerializeField] private GameObject reloadWarning;
+
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip pistolAudio;
     [SerializeField] private AudioClip heavyAudio;
 
-    private Transform firePoint;
-    public Transform pistolFirePoint;
-    public Transform heavyFirePoint;
-    public float bulletSpeed = 10f;
+    [SerializeField] private Transform pistolFirePoint;
+    [SerializeField] private Transform heavyFirePoint;
 
-    public int magazineSize = 25;
-    public TextMeshProUGUI ammunitionDisplay;
-    public GameObject reloadWarning;
+    [SerializeField] private TextMeshProUGUI ammunitionDisplay;
+
+    [SerializeField] private float damage;
+    [SerializeField] private float pistolDamage = 5f;
+    [SerializeField] private float heavyDamage = 15f;
+    [SerializeField] private float fireRate= 2f;
+    [SerializeField] private float bulletSpeed = 10f;
+    [SerializeField] private int magazineSize = 25;
+
+    private float nextTimeToFire = 0f;
+
     private int bulletsShot;
-    int bulletsLeft;
+    private int bulletsLeft;
 
     private void Awake()
     {
@@ -111,36 +113,26 @@ public class Gun : MonoBehaviour
 
     private void HeavyFire()
     {
-        
-            
-          
-
-            if (Input.GetButton("Fire1")&&Time.time >= nextTimeToFire)
+        if (Input.GetButton("Fire1")&&Time.time >= nextTimeToFire)
+        {
+            if (!audioSource.isPlaying)
             {
-                if (!audioSource.isPlaying)
-                {
-                    audioSource.PlayOneShot(heavyAudio);
-                }
-                animator.SetBool("Shooting", true);
-                 //nexttimetofire olayý bozuyor.
-                FireBullet();
-                nextTimeToFire = Time.time + 1f / fireRate;
+                audioSource.PlayOneShot(heavyAudio);
             }
-            else
-            {
-                animator.SetBool("Shooting", false);
+            animator.SetBool("Shooting", true);
+            FireBullet();
+            nextTimeToFire = Time.time + 1f / fireRate;
+        }
+        else
+        {
+            animator.SetBool("Shooting", false);
 
-            }
+        }
         if (Input.GetButtonUp("Fire1"))
         {
             audioSource.Stop();
         }
        
-    }
-
-    private void HeavySound()
-    {
-        
     }
 
     private void Reload()

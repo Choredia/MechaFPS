@@ -9,47 +9,44 @@ using UnityEngine.UI;
 public class PlayerScript : MonoBehaviour
 {
     private CharacterController characterController;
+    private AudioSource audioSource;
+    private Vector3 movement;
+    private Vector3 velocity;
+
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Image splatterImage;
     [SerializeField] private Image hurtImage;
     [SerializeField] private Image deathImage;
     [SerializeField] private Image lastImage;
+    [SerializeField] private Image healthBar;
+    [SerializeField] private Animator playerAnimator;
+    [SerializeField] private TMP_Text healthText;
+
     [SerializeField] private float hurtTimer = 0.1f;
     [SerializeField] private float fadeDuration = 1f;
-    [SerializeField] private float fadeInDuration = 1f; // Alfa deðerinin artýþ süresini ayarlamak için deðiþkeni ekleyin.
-    [SerializeField] private float fadeOutDuration = 1f; // Alfa deðerinin azalýþ süresini ayarlamak için deðiþkeni ekleyin.
-
-    private float full = .4f;
-    private bool fade = true;
-
-    [SerializeField] private float playerSpeed;
+    [SerializeField] private float fadeInDuration = 1f; 
+    [SerializeField] private float fadeOutDuration = 1f; 
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 10f;
     [SerializeField] private float crouchSpeed = 2.5f;
-
-
     [SerializeField] private float groundDistance = 0.4f;
     [SerializeField] private float jumpHeight = 5f;
-    private float gravity = -9.81f;
+    [SerializeField] private float full = 0.4f;
 
-    private AudioSource audioSource;
-    private Vector3 movement;
-    private Vector3 velocity;
-    private bool isGrounded;
-    private bool crouching;
     private float xValue;
     private float zValue;
-
-    [SerializeField] private Animator playerAnimator;
-    [SerializeField] private TMP_Text healthText;
-    [SerializeField] private Image healthBar;
-
-    private float maxPlayerHealth = 100f;
     private float currentPlayerHealth;
+    private float playerSpeed;
     private float lerpSpeed;
+    private float gravity = -9.81f;
+    private float maxPlayerHealth = 100f;
+
+    private bool isGrounded;
+    private bool crouching;
+    private bool fade = true;
     private bool isAlive = true;
-    [SerializeField] PlayerLook look;
+    
 
 
     // Start is called before the first frame update
@@ -181,18 +178,18 @@ public class PlayerScript : MonoBehaviour
         {
             playerSpeed = crouchSpeed;
             crouching = true;
-            characterController.center = new Vector3(0, 0.04f, 0);
             characterController.radius = 0.78f;
             characterController.height = 1.5f;
+            playerAnimator.SetBool("isCrouching", crouching);
+
         }
 
         if (Input.GetKeyUp(KeyCode.C))
         {
             playerSpeed = walkSpeed;
             crouching = false;
-            characterController.center = new Vector3(0, 0.33f, 0);
-            characterController.radius = 0.5f;
-            characterController.height = 2.3f;
+            characterController.radius = 0.45f;
+            characterController.height = 2.5f;
             playerAnimator.SetBool("isCrouching", crouching);
         }
 
@@ -264,7 +261,7 @@ public class PlayerScript : MonoBehaviour
         hurtImage.enabled = true;
        
 
-        StartCoroutine(FadeInDeathImage()); // Ölme anýnda ölüm efekti için "deathImage" nesnesinin alfasýný artýran bir iþlev çaðýrýn.
+        StartCoroutine(FadeInDeathImage()); 
     }
 
     IEnumerator FadeInDeathImage()
@@ -276,7 +273,7 @@ public class PlayerScript : MonoBehaviour
             deathImage.enabled = true;
             float elapsedTime = 0f;
 
-            // Fading In (Artýþ)
+            // Fading In 
             while (elapsedTime < fadeInDuration)
             {
                 float alpha = Mathf.Lerp(0f, full, elapsedTime / fadeInDuration);
@@ -286,7 +283,7 @@ public class PlayerScript : MonoBehaviour
                 yield return null;
             }
 
-            // Fading Out (Azalýþ)
+            // Fading Out 
             while (elapsedTime < (fadeInDuration + fadeOutDuration))
             {
                 float alpha = Mathf.Lerp(full, 0f, (elapsedTime - fadeInDuration) / fadeOutDuration);
@@ -303,7 +300,7 @@ public class PlayerScript : MonoBehaviour
             else
             {
                 full += 0.1f;
-                deathImage.enabled = false; // Efekt tamamlandýktan sonra nesneyi devre dýþý býrakýn.
+                deathImage.enabled = false; 
             }
         }
 
@@ -312,12 +309,10 @@ public class PlayerScript : MonoBehaviour
 
     IEnumerator FadeToBlack()
     {
-        // Ekrana geçiþ için beklemek istediðiniz süreyi burada ayarlayabilirsiniz (örneðin, 5 saniye için: yield return new WaitForSeconds(5f);)
 
         lastImage.enabled = true;
         float elapsedTime = 0f;
 
-        // Tamamen siyah hale gelene kadar ekrana geçiþ yapýn
         while (elapsedTime < fadeOutDuration)
         {
             float alpha = Mathf.Lerp(0f, 1f, elapsedTime / fadeOutDuration);
@@ -327,7 +322,6 @@ public class PlayerScript : MonoBehaviour
             yield return null;
         }
 
-        // Eðer buraya ulaþýlýrsa oyunu yeniden baþlatmak veya farklý bir iþlem yapmak isteyebilirsiniz.
     }
 
 }

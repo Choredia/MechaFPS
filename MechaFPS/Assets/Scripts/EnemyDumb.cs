@@ -4,28 +4,28 @@ using UnityEngine;
 
 public class EnemyDumb : MonoBehaviour
 {
-    public Transform target;
+    [SerializeField] private Transform target;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private Transform firePoint1;
+    [SerializeField] Transform mainCam;
+    [SerializeField] AudioSource walkSound;
+    [SerializeField] AudioSource gunSound;
+    [SerializeField] private float fireRate = 2.0f;
+
     private EnemyReferences enemyReferences;
 
     private float pathUpdateDeadLine;
     private float shootingDistance;
+    private float nextFireTime;
     private float BlendEnemySpeed;
     private float enemySpeed;
     private float bulletSpeed = 10f;
+
     private Vector3 lastPosition;
-    public Transform firePoint;
-    public Transform firePoint1;
-    [SerializeField] Transform mainCam;
-    [SerializeField] AudioSource walkSound;
-    [SerializeField] AudioSource gunSound;
-    
-    [SerializeField] private float fireRate = 2.0f;
-    private float nextFireTime;
 
     private void Awake()
     {
         enemyReferences = GetComponent<EnemyReferences>();
-        
     }
     void Start()
     {
@@ -70,8 +70,6 @@ public class EnemyDumb : MonoBehaviour
                     nextFireTime = Time.time + 1f/fireRate;
 
                 }
-                
-
             }
             else
             {
@@ -89,8 +87,6 @@ public class EnemyDumb : MonoBehaviour
     }
     private void FireBullet()
     {
-        
-
         GameObject bullet = ObjectPool.Instance.GetEnemy();
         bullet.transform.position = firePoint.position;
         bullet.transform.rotation = transform.rotation;
@@ -146,7 +142,4 @@ public class EnemyDumb : MonoBehaviour
         pathUpdateDeadLine = Time.time + enemyReferences.pathUpdateDelay;
         enemyReferences.navMeshAgent.SetDestination(target.position);
     }
-    
-
-
 }

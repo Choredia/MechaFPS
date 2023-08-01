@@ -2,15 +2,16 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
-    public float health = 50f;
-    private Animator animator;
-    private bool isDead = false;
+    [SerializeField] private float health = 50f;
+    [SerializeField] private float sightRange;
+    [SerializeField] private bool playerInSightRange;
+    [SerializeField] private LayerMask Player;
     [SerializeField] EnemyDumb enemyScript;
-    private AudioSource audioSource;
-    public float sightRange;
-    public bool playerInSightRange;
 
-    public LayerMask Player;
+    private Animator animator;
+    private AudioSource audioSource;
+
+    private bool isDead = false;
 
 
     private void Awake()
